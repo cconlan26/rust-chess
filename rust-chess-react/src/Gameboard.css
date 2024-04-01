@@ -1,3 +1,18 @@
+.container {
+  display: flex;
+  flex-direction: row;
+}
+
+.moves {
+  width: 200px;
+  height: 800px;
+  background: #ffe9c5;
+}
+
+.moves-title {
+  text-align: center;
+}
+
 .board {
   width: 800px;
   display: grid;

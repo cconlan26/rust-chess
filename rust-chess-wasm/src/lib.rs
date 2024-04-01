@@ -31,6 +31,44 @@ pub struct Position(usize, usize);
 #[wasm_bindgen]
 pub struct PositionSourceDest(Position, Position);
 
+impl PositionSourceDest {
+    fn source_rank(&self) -> usize {
+        self.0.0
+    }
+
+    fn source_file(&self) -> usize {
+        self.0.1
+    }
+
+    fn dest_rank(&self) -> usize {
+        self.1.0
+    }
+
+    fn dest_file(&self) -> usize {
+        self.1.1
+    }
+}
+
+#[wasm_bindgen]
+pub fn source_rank(psd: &PositionSourceDest) -> usize {
+    psd.source_rank()
+}
+
+#[wasm_bindgen]
+pub fn source_file(psd: &PositionSourceDest) -> usize {
+    psd.source_file()
+}
+
+#[wasm_bindgen]
+pub fn dest_rank(psd: &PositionSourceDest) -> usize {
+    psd.dest_rank()
+}
+
+#[wasm_bindgen]
+pub fn dest_file(psd: &PositionSourceDest) -> usize {
+    psd.dest_file()
+} 
+
 #[wasm_bindgen]
 pub struct GameHandler {
     game: Game
@@ -46,18 +84,9 @@ fn make_square_from_pos(position: Position) -> Square {
 }
 
 impl GameHandler {
-    pub fn make_move(&mut self, source: Position, dest: Position) -> BoardStatus {
+    pub fn make_move(&mut self, source: Position, dest: Position) -> bool {
         let chess_move = ChessMove::new(make_square_from_pos(source), make_square_from_pos(dest), None);
-        
-        self.game.make_move(chess_move);
-
-        let board_status = self.game.current_position().status();
-        
-        match board_status {
-            chess::BoardStatus::Checkmate => BoardStatus::Checkmate,
-            chess::BoardStatus::Stalemate => BoardStatus::Stalemate,
-            chess::BoardStatus::Ongoing => BoardStatus::Ongoing
-        }
+        self.game.make_move(chess_move)
     }
 
     pub fn get_all_moves(&self) -> Vec<PositionSourceDest> {
@@ -104,9 +133,8 @@ impl GameHandler {
 }
 
 #[wasm_bindgen]
-pub fn make_move(game_handler: &mut GameHandler, source: Position, dest: Position) -> BoardStatus {
-    game_handler.make_move(source, dest)
-
+pub fn make_move(game_handler: &mut GameHandler, source_rank: usize, source_file: usize, dest_rank: usize, dest_file: usize) -> bool {
+    game_handler.make_move(Position(source_rank, source_file), Position(dest_rank, dest_file))
     // TODO: calculate move from opponent and update board accordingly
 }
 
