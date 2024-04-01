@@ -1,0 +1,25 @@
+.board {
+  width: 800px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.light {
+  height: 100px;
+  width: 100px;
+  background-color: #ffe9c5;
+}
+
+.dark {
+  height: 100px;
+  width: 100px;
+  background-color: #ffce84;
+}
+
+.piece {
+  font-size: 50px;
+  display: table;
+  margin: 0 auto;
+  padding-top: 15px;
+}
