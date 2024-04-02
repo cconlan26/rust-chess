@@ -3,14 +3,12 @@ import {
   get_piece_for_display,
   make_move,
   get_all_moves,
-  source_rank,
-  source_file,
-  dest_rank,
-  dest_file,
-  PositionSourceDest,
 } from "rust-chess-wasm";
 import "./Gameboard.css";
-import { useEffect, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
+import BoardTile from "./BoardTile";
+import { processPotentialMoves } from "./utils/processPotentialMoves";
+import { getStringForPos } from "./utils/getStringForPos";
 
 export type Props = {
   gameHandler: GameHandler;
@@ -21,20 +19,67 @@ export default function Gameboard({ gameHandler }: Props) {
   const rankAndFiles = Array.from(new Array(64), (x, i) => i);
   const [moves, setMoves] = useState<string[]>([]);
 
-  const [potentialMoves, _] = useState<PositionSourceDest[]>(
-    get_all_moves(gameHandler)
+  const [draggedPiece, setDraggedPiece] = useState<number | undefined>();
+
+  const [potentialMoves, setPotentialMoves] = useState<{
+    [key: number]: Set<number>;
+  }>(processPotentialMoves(get_all_moves(gameHandler)));
+
+  const movesForDraggedPiece = useMemo(() => {
+    return (
+      (draggedPiece != null ? potentialMoves[draggedPiece] : undefined) ??
+      new Set<number>()
+    );
+  }, [draggedPiece, potentialMoves]);
+
+  const makeMove = useCallback(
+    (destRank: number, destFile: number) => {
+      if (draggedPiece == null) {
+        console.log("Dragged piece is null");
+        return;
+      }
+
+      const sourceRank = Math.floor(draggedPiece / 8);
+      const sourceFile = draggedPiece % 8;
+
+      //TEST MOVE REMOVE
+      const pieceToMove = get_piece_for_display(
+        gameHandler,
+        sourceRank,
+        sourceFile
+      );
+      const pieceAtDest = get_piece_for_display(
+        gameHandler,
+        destRank,
+        destFile
+      );
+
+      if (!make_move(gameHandler, sourceRank, sourceFile, destRank, destFile)) {
+        console.log("Move was invalid!");
+        return;
+      }
+
+      setMoves((moves) => [
+        ...moves,
+        `${pieceToMove} ${getStringForPos(
+          sourceRank,
+          sourceFile
+        )}-${getStringForPos(destRank, destFile)} ${pieceAtDest}`,
+      ]);
+    },
+    [draggedPiece, gameHandler]
   );
 
   // FOR TESTING
-  useEffect(() => {
-    potentialMoves.forEach((psd) => {
-      console.log(
-        `Source rank: ${source_rank(psd)}, Source file: ${source_file(
-          psd
-        )}, Dest rank: ${dest_rank(psd)}, Dest file: ${dest_file(psd)}`
-      );
-    });
-  }, [potentialMoves]);
+  //   useEffect(() => {
+  //     potentialMoves.forEach((psd) => {
+  //       console.log(
+  //         `Source rank: ${source_rank(psd)}, Source file: ${source_file(
+  //           psd
+  //         )}, Dest rank: ${dest_rank(psd)}, Dest file: ${dest_file(psd)}`
+  //       );
+  //     });
+  //   }, [potentialMoves]);
 
   return (
     <div className="container">
@@ -48,6 +93,9 @@ export default function Gameboard({ gameHandler }: Props) {
               file={file}
               gameHandler={gameHandler}
               key={i}
+              setDraggedPiece={setDraggedPiece}
+              isEligibleForMove={movesForDraggedPiece.has(rank * 8 + file)}
+              makeMove={makeMove}
             />
           );
         })}
@@ -60,10 +108,16 @@ export default function Gameboard({ gameHandler }: Props) {
       </div>
       <button
         onClick={() => {
+          //TEST MOVE REMOVE
+          const pieceToMove = get_piece_for_display(gameHandler, 1, 0);
+          const pieceAtDest = get_piece_for_display(gameHandler, 2, 0);
           console.log(make_move(gameHandler, 1, 0, 2, 0));
           setMoves((moves) => [
             ...moves,
-            `${getStringForPos(1, 0)}-${getStringForPos(2, 0)}`,
+            `${pieceToMove} ${getStringForPos(1, 0)}-${getStringForPos(
+              2,
+              0
+            )} ${pieceAtDest}`,
           ]);
         }}
       >
@@ -72,39 +126,3 @@ export default function Gameboard({ gameHandler }: Props) {
     </div>
   );
 }
-
-type BoardTileProps = {
-  rank: number;
-  file: number;
-  gameHandler: GameHandler;
-};
-
-const BoardTile = ({ rank, file, gameHandler }: BoardTileProps) => {
-  const tileColor = (rank + file) % 2 === 0 ? "light" : "dark";
-  return (
-    <div className={tileColor}>
-      <span className="piece">
-        {get_piece_for_display(gameHandler, rank, file)}
-      </span>
-    </div>
-  );
-};
-
-export const getStringForPos = (rank: number, file: number) => {
-  const fileLetter = String.fromCharCode(65 + file);
-  return `${rank + 1}${fileLetter}`;
-};
-
-export const processPotentialMoves = (potentialMoves: PositionSourceDest[]) => {
-  const move_map = {};
-
-  potentialMoves.forEach((psd) => {
-    console.log(
-      `Source rank: ${source_rank(psd)}, Source file: ${source_file(
-        psd
-      )}, Dest rank: ${dest_rank(psd)}, Dest file: ${dest_file(psd)}`
-    );
-  });
-
-  return move_map;
-};
