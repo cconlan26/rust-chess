@@ -9,6 +9,7 @@ type Props = {
   setDraggedPiece: (piece: number | undefined) => void;
   isEligibleForMove: boolean;
   makeMove: (rank: number, file: number) => void;
+  canMakeMove: boolean;
 };
 
 export default function BoardTile({
@@ -18,9 +19,10 @@ export default function BoardTile({
   setDraggedPiece,
   isEligibleForMove,
   makeMove,
+  canMakeMove,
 }: Props) {
   const tileColor = (rank + file) % 2 === 0 ? "light" : "dark";
-  const [isDraggedInto, setIsDraggedInto] = useState(false);
+  // const [isDraggedInto, setIsDraggedInto] = useState(false);
   const piece = get_piece_for_display(gameHandler, rank, file);
   return (
     <div
@@ -45,7 +47,7 @@ export default function BoardTile({
           console.log(`Move made with rank ${rank} and file ${file}`);
         }
       }}
-      draggable={piece !== " "}
+      draggable={piece !== " " && canMakeMove}
     >
       <span className="piece">{piece}</span>
     </div>
