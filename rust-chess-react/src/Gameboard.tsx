@@ -18,6 +18,11 @@ import { getStringForPos } from "./utils/getStringForPos";
 
 const ALL_CHESS_FILES = ["a", "b", "c", "d", "e", "f", "g", "h"];
 const ALL_CHESS_RANKS = [8, 7, 6, 5, 4, 3, 2, 1];
+const END_STATES = new Set([
+  GameState.Win,
+  GameState.Lose,
+  GameState.Stalemate,
+]);
 
 export type Props = {
   gameHandler: GameHandler;
@@ -96,6 +101,8 @@ export default function Gameboard({ gameHandler }: Props) {
         )
       );
 
+      console.log(get_piece_for_display(gameHandler, destRank, destFile));
+
       // Now we can update the user with their new possible moves
       setPotentialMoves(processPotentialMoves(get_all_moves(gameHandler)));
     }
@@ -127,47 +134,52 @@ export default function Gameboard({ gameHandler }: Props) {
   );
 
   return (
-    <div className="container">
-      <div className="board-wrapper">
-        <div className="ranks">
-          {ALL_CHESS_RANKS.map((rank) => (
-            <span>{rank}</span>
-          ))}
-        </div>
-        <div className="boardWithFiles">
-          <div className="files">
-            {ALL_CHESS_FILES.map((file) => (
-              <span>{file}</span>
+    <>
+      {END_STATES.has(gameState) && <div className="endState"></div>}
+      <div className="container">
+        <div className="board-wrapper">
+          <div className="ranks">
+            {ALL_CHESS_RANKS.map((rank) => (
+              <span>{rank}</span>
             ))}
           </div>
-          <div className="board">
-            {rankAndFiles.map((i) => {
-              const rank = 7 - Math.floor(i / 8);
-              const file = i % 8;
-              return (
-                <BoardTile
-                  rank={rank}
-                  file={file}
-                  gameHandler={gameHandler}
-                  key={i}
-                  setDraggedPiece={setDraggedPiece}
-                  isEligibleForMove={movesForDraggedPiece.has(rank * 8 + file)}
-                  makeMove={makeMove}
-                  canMakeMove={gameState === GameState.PlayerTurn}
-                />
-              );
-            })}
+          <div className="boardWithFiles">
+            <div className="files">
+              {ALL_CHESS_FILES.map((file) => (
+                <span>{file}</span>
+              ))}
+            </div>
+            <div className="board">
+              {rankAndFiles.map((i) => {
+                const rank = 7 - Math.floor(i / 8);
+                const file = i % 8;
+                return (
+                  <BoardTile
+                    rank={rank}
+                    file={file}
+                    gameHandler={gameHandler}
+                    key={i}
+                    setDraggedPiece={setDraggedPiece}
+                    isEligibleForMove={movesForDraggedPiece.has(
+                      rank * 8 + file
+                    )}
+                    makeMove={makeMove}
+                    canMakeMove={gameState === GameState.PlayerTurn}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
+        <div className="moves">
+          <h1 className="moves-title">Moves</h1>
+          <ol className="moves-list">
+            {moves.map((move) => (
+              <li>{move}</li>
+            ))}
+          </ol>
+        </div>
       </div>
-      <div className="moves">
-        <h1 className="moves-title">Moves</h1>
-        <ol className="moves-list">
-          {moves.map((move) => (
-            <li>{move}</li>
-          ))}
-        </ol>
-      </div>
-    </div>
+    </>
   );
 }
