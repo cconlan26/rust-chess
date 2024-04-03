@@ -26,7 +26,7 @@ export default function BoardTile({
   const piece = get_piece_for_display(gameHandler, rank, file);
   return (
     <div
-      className={`${tileColor} ${isEligibleForMove ? "isEligible" : ""}`}
+      className={tileColor}
       onDragStart={() => {
         console.log(piece);
         setDraggedPiece(rank * 8 + file);
@@ -49,6 +49,7 @@ export default function BoardTile({
       }}
       draggable={piece !== " " && canMakeMove}
     >
+      {isEligibleForMove && <div className="isEligible" />}
       <span className="piece">{piece}</span>
     </div>
   );

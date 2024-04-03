@@ -128,34 +128,36 @@ export default function Gameboard({ gameHandler }: Props) {
 
   return (
     <div className="container">
-      <div className="ranks">
-        {ALL_CHESS_RANKS.map((rank) => (
-          <span>{rank}</span>
-        ))}
-      </div>
       <div className="board-wrapper">
-        <div className="files">
-          {ALL_CHESS_FILES.map((file) => (
-            <span>{file}</span>
+        <div className="ranks">
+          {ALL_CHESS_RANKS.map((rank) => (
+            <span>{rank}</span>
           ))}
         </div>
-        <div className="board">
-          {rankAndFiles.map((i) => {
-            const rank = 7 - Math.floor(i / 8);
-            const file = i % 8;
-            return (
-              <BoardTile
-                rank={rank}
-                file={file}
-                gameHandler={gameHandler}
-                key={i}
-                setDraggedPiece={setDraggedPiece}
-                isEligibleForMove={movesForDraggedPiece.has(rank * 8 + file)}
-                makeMove={makeMove}
-                canMakeMove={gameState === GameState.PlayerTurn}
-              />
-            );
-          })}
+        <div className="boardWithFiles">
+          <div className="files">
+            {ALL_CHESS_FILES.map((file) => (
+              <span>{file}</span>
+            ))}
+          </div>
+          <div className="board">
+            {rankAndFiles.map((i) => {
+              const rank = 7 - Math.floor(i / 8);
+              const file = i % 8;
+              return (
+                <BoardTile
+                  rank={rank}
+                  file={file}
+                  gameHandler={gameHandler}
+                  key={i}
+                  setDraggedPiece={setDraggedPiece}
+                  isEligibleForMove={movesForDraggedPiece.has(rank * 8 + file)}
+                  makeMove={makeMove}
+                  canMakeMove={gameState === GameState.PlayerTurn}
+                />
+              );
+            })}
+          </div>
         </div>
       </div>
       <div className="moves">

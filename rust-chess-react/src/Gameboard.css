@@ -3,14 +3,14 @@
   flex-direction: row;
   position: relative;
   background-color: #ffe9c5;
-  max-height: 100vh;
-  max-width: 100vw;
+  height: 100%;
+  width: 100%;
 }
 
 .moves {
-  width: 200px;
+  width: 400px;
   background: #ffe9c5;
-  border-left: 4mm ridge rgba(211, 220, 50, 0.6);
+  border-left: 4mm ridge rgba(130, 175, 6, 0.712);
   max-height: 100vh;
   overflow: auto;
 }
@@ -20,7 +20,10 @@
 }
 
 .board-wrapper {
-  padding: 40px 80px 40px 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  align-self: center;
 }
 
 .board {
@@ -41,8 +44,9 @@
 }
 
 .ranks {
-  padding-top: 80px;
-  padding-left: 400px;
+  padding-top: 40px;
+  padding-left: 20px;
+  padding-right: 20px;
   height: 800px;
   display: flex;
   flex-direction: column;

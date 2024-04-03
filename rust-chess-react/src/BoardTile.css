@@ -2,12 +2,14 @@
   height: 100px;
   width: 100px;
   background-color: #ffe9c5;
+  position: relative;
 }
 
 .dark {
   height: 100px;
   width: 100px;
   background-color: #ffce84;
+  position: relative;
 }
 
 .piece {
@@ -18,5 +20,14 @@
 }
 
 .isEligible {
-  background-color: aliceblue;
+  background-color: rgba(130, 175, 6, 0.8);
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin: auto;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  top: 0px;
 }
